@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Grievance Portal</title>
+  <style>
+    :root {
+      --main-bg: #ffe0f0;
+      --thankyou-bg: #fff4b3;
+    }
+
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #ffdde1;
+      margin: 0;
+      padding: 0;
+      height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      overflow: hidden;
+    }
+
+    .container {
+      background: var(--main-bg);
+      border-radius: 15px;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+      padding: 30px;
+      max-width: 400px;
+      width: 90%;
+      text-align: center;
+      transition: all 0.5s ease;
+      opacity: 0;
+      transform: translateY(20px);
+    }
+
+    .container.active {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    input, textarea, select, button {
+      width: 100%;
+      margin: 10px 0;
+      padding: 10px;
+      border: none;
+      border-radius: 8px;
+      font-size: 16px;
+      transition: box-shadow 0.3s ease;
+    }
+
+    input:focus, textarea:focus, select:focus {
+      outline: none;
+      box-shadow: 0 0 8px #ff66b2;
+    }
+
+    button {
+      background-color: #ff66b2;
+      color: white;
+      font-weight: bold;
+      cursor: pointer;
+      transform: scale(1);
+      transition: transform 0.2s ease, background-color 0.3s;
+    }
+
+    button:hover {
+      background-color: #e0559e;
+      transform: scale(1.05);
+    }
+
+    h2 {
+      margin-bottom: 10px;
+    }
+
+    .hidden {
+      display: none;
+    }
+
+    .emoji-option {
+      font-size: 20px;
+      transition: transform 0.2s ease;
+    }
+
+    select:focus .emoji-option {
+      transform: scale(1.2);
+    }
+
+    label {
+      display: block;
+      margin-top: 10px;
+      font-weight: bold;
+    }
+
+    #severityValue {
+      font-weight: bold;
+      font-size: 1.2em;
+      display: block;
+      margin-bottom: 5px;
+      transition: all 0.3s ease;
+    }
+
+    input[type="range"] {
+      -webkit-appearance: none;
+      height: 8px;
+      background: #ff66b2;
+      border-radius: 5px;
+      outline: none;
+      cursor: pointer;
+    }
+
+    input[type="range"]::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      appearance: none;
+      width: 18px;
+      height: 18px;
+      border-radius: 50%;
+      background: #fff;
+      border: 2px solid #ff66b2;
+      cursor: pointer;
+      transition: background 0.3s ease;
+    }
+
+    input[type="range"]::-webkit-slider-thumb:hover {
+      background: #ffe0f0;
+    }
+
+    /* THANK YOU PAGE FULLSCREEN FIX */
+    .thank-you {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      background-color: var(--thankyou-bg);
+      display: none;
+      justify-content: center;
+      align-items: center;
+      flex-direction: column;
+      z-index: 1000;
+    }
+
+    .thank-you.active {
+      display: flex;
+    }
+
+    .full-screen-message {
+      text-align: center;
+      padding: 20px;
+      max-width: 600px;
+    }
+
+    .full-screen-message h2 {
+      margin-bottom: 10px;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Page 1: Login -->
+  <div class="container active" id="page1">
+    <h2>Silver's Grievance Portal 💖</h2>
+    <p>Hopefully this is helpful. You can submit your grievances for my viewing pleasure 😌 Whenever you like!</p>
+    <input type="text" id="username" placeholder="Username" required />
+    <input type="password" id="password" placeholder="Password" required />
+    <button onclick="goToStep2()">Login</button>
+  </div>
+
+  <!-- Page 2: Form -->
+  <form id="grievanceForm" class="container hidden"
+    action="https://formsubmit.co/joshuamathias109@gmail.com"
+    method="POST" onsubmit="goToStep3(event)">
+    
+    <h2>Submit Your Grievance 😤</h2>
+
+    <input type="hidden" name="username" id="formUsername" />
+    <input type="hidden" name="password" id="formPassword" />
+
+    <input type="text" name="title" placeholder="Grievance Title" required />
+    <textarea name="issue" placeholder="What's bothering you?" required></textarea>
+
+    <label for="mood">Mood</label>
+    <select name="mood" required>
+      <option value="Angry">😡 Angry</option>
+      <option value="Sad">😢 Sad</option>
+      <option value="Annoyed">🙄 Annoyed</option>
+    </select>
+
+    <label for="severity">Severity: <span id="severityValue">Moderate</span></label>
+    <input type="range" id="severity" name="severity" min="1" max="5" value="3" />
+
+    <button type="submit">Submit Grievance</button>
+  </form>
+
+  <!-- Page 3: Thank You -->
+  <div id="page3" class="thank-you hidden">
+    <div class="full-screen-message">
+      <h2>🌟Thank you, Ms. Silver 🦭</h2>
+      <p>Your grievance has been sent to Josh 💌<br>He will get back to you very soon. (He will think about it)</p>
+    </div>
+  </div>
+
+  <script>
+    function goToStep2() {
+      const username = document.getElementById("username").value;
+      const password = document.getElementById("password").value;
+      if (username && password) {
+        document.getElementById("page1").classList.add("hidden");
+        const form = document.getElementById("grievanceForm");
+        form.classList.remove("hidden");
+        form.classList.add("active");
+
+        // Set hidden form values
+        document.getElementById("formUsername").value = username;
+        document.getElementById("formPassword").value = password;
+      }
+    }
+
+    function goToStep3(event) {
+      event.preventDefault();
+      const form = document.getElementById("grievanceForm");
+      const submitBtn = form.querySelector("button[type='submit']");
+      submitBtn.disabled = true;
+
+      fetch(form.action, {
+        method: "POST",
+        body: new FormData(form),
+        headers: {
+          Accept: "application/json"
+        }
+      }).then(response => {
+        if (response.ok) {
+          form.classList.add("hidden");
+          const thankYou = document.getElementById("page3");
+          thankYou.classList.remove("hidden");
+          thankYou.classList.add("active");
+        } else {
+          alert("Oops! There was a problem submitting your grievance.");
+          submitBtn.disabled = false;
+        }
+      });
+    }
+
+    // Slider label update
+    const slider = document.getElementById('severity');
+    const output = document.getElementById('severityValue');
+    const levels = {
+      1: 'Tiny',
+      2: 'Little',
+      3: 'Moderate',
+      4: 'Big',
+      5: 'Enormous'
+    };
+    if (slider) {
+      slider.addEventListener('input', () => {
+        output.textContent = levels[slider.value];
+      });
+    }
+  </script>
+
+</body>
+</html>
